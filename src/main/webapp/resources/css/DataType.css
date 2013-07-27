@@ -1,0 +1,126 @@
+/**
+ * 鏍戝舰鍒楄〃鍥炬爣鏍峰紡鏂囦欢
+ */
+ 
+@CHARSET "UTF-8";
+
+.datatype-folder-open {
+	background: url("../images/DataTypeIco/folder-open.gif") left top no-repeat !important;
+}
+
+.datatype-none {
+	background: url("../images/DataTypeIco/station.png") left top no-repeat !important;
+}
+
+.datatype-a {
+	background: url("../images/DataTypeIco/a.png") left top no-repeat !important;
+}
+
+.datatype-bal {
+	background: url("../images/DataTypeIco/bal.png") left top no-repeat !important;
+}
+
+.datatype-hrms {
+	background: url("../images/DataTypeIco/hrms.png") left top no-repeat !important;
+}
+
+.datatype-hz {
+	background: url("../images/DataTypeIco/hz.png") left top no-repeat !important;
+}
+
+.datatype-imbng {
+	background: url("../images/DataTypeIco/imbng.png") left top no-repeat !important;
+}
+
+.datatype-p {
+	background: url("../images/DataTypeIco/p.png") left top no-repeat !important;
+}
+
+.datatype-pf {
+	background: url("../images/DataTypeIco/pf.png") left top no-repeat !important;
+}
+
+.datatype-phsa {
+	background: url("../images/DataTypeIco/phsa.png") left top no-repeat !important;
+}
+
+.datatype-phsb {
+	background: url("../images/DataTypeIco/phsb.png") left top no-repeat !important;
+}
+
+.datatype-phsc {
+	background: url("../images/DataTypeIco/phsc.png") left top no-repeat !important;
+}
+
+.datatype-plt {
+	background: url("../images/DataTypeIco/plt.png") left top no-repeat !important;
+}
+
+.datatype-posseq {
+	background: url("../images/DataTypeIco/posseq.png") left top no-repeat !important;
+}
+
+.datatype-q {
+	background: url("../images/DataTypeIco/q.png") left top no-repeat !important;
+}
+
+.datatype-s {
+	background: url("../images/DataTypeIco/s.png") left top no-repeat !important;
+}
+
+.datatype-thd {
+	background: url("../images/DataTypeIco/thd.png") left top no-repeat !important;
+}
+
+.datatype-u {
+	background: url("../images/DataTypeIco/u.png") left top no-repeat !important;
+}
+
+.datatype-val {
+	background: url("../images/DataTypeIco/val.png") left top no-repeat !important;
+}
+
+.datatype-event {
+	background: url("../images/DataTypeIco/event.png") left top no-repeat !important;
+}
+
+.datatype-empty {
+	/* 璁惧畾瀹藉害涓�锛屼粠鑰岄樆姝㈡爲褰㈡帶浠堕」鐨勫浘鏍囨樉绀�*/
+	width: 0px !important;
+}
+
+.datatype-busbar {
+	background: url("../images/DataTypeIco/busbar.png") left top no-repeat !important;
+}
+
+.datatype-busbarboard {
+	background: url("../images/DataTypeIco/busbarboard.png") left top no-repeat !important;
+}
+
+.datatype-region {
+	background: url("../images/DataTypeIco/region.png") left top no-repeat !important;
+}
+
+.datatype-device {
+	background: url("../images/DataTypeIco/device.png") left top no-repeat !important;
+}
+
+.datatype-device-resolved {
+	background: url("../images/DataTypeIco/device-resolved.png") left top no-repeat !important;
+}
+
+.datatype-device-unresolved {
+	background: url("../images/DataTypeIco/device-unresolved.png") left top no-repeat !important;
+}
+
+.datatype-subregion {
+	background: url("../images/DataTypeIco/subregion.png") left top no-repeat !important;
+}
+
+.datatype-site {
+	background: url("../images/DataTypeIco/site.png") left top no-repeat !important;
+}
+
+/*鏃堕棿閫夋嫨妗�鏍峰紡閲嶆柊瀹氫箟*/
+
+

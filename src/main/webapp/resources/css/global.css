@@ -1,0 +1,129 @@
+.diy,
+.diy *{
+	box-sizing: content-box;
+	-moz-box-sizing : content-box;
+	-webkit-box-sizing: content-box;
+}
+
+.gloTicon{
+	width: auto;
+	height: 24px;
+	margin: 8px 0 0 17px;
+}
+
+/*时间选择框 样式重新定义*/
+.button{
+    cursor: pointer;
+    margin-left: 4px;
+    height: 21px;
+    padding: 2px 12px 5px 12px;
+    font-family: arial,sans-serif;
+    font-size: 12px;
+    font-size: 12px 9;
+    border: 1px solid #999;
+    border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    background: white;
+    background-image: -webkit-gradient(linear,0 0,0 100%,from(white),to(#EEEEEF));
+    display: -moz-inline-box;
+    display: inline-block;
+}
+
+/**/
+.chartLeftTitle{
+	float:left; margin: 50px 5px auto 10px; width:50px; border: 1px solid #F7B864;word-break: normal;
+	background-color:#FDE9C6;
+	display: block;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow: hidden;
+	width:100px;
+	padding: 20px 10px;
+}
+.chartChildTitle{
+	margin: 0px 5px auto 10px;
+	padding: 5px;
+	width: auto;
+	clear: both;
+	word-break: normal;
+	display: block;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow: hidden;
+	font-family: Arial;
+	font-size: 14px;
+	font-weight: bold;
+	line-height: 20px;
+	text-align: center;
+}
+.chartChildTitle .info, .chartChildTitle .error {font-size: 12px;font-weight: normal; border:0;}
+.chartChild {
+    float:left;
+    margin-bottom:30px;
+}
+
+.chartTitle {
+	margin: 0px 5px auto 10px;
+	padding: 10px;
+	width: auto;
+	clear: both;
+	word-break: normal;
+	display: block;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow: hidden;
+	font-family: Arial;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: normal;
+	text-align: center;
+}
+.chartTitle .error{
+	border:0px;
+	margin:0px;
+	color:red;
+	padding:0px 0px 0px 26px;
+	font:14px/22px "宋体";
+}
+.chartTitle .info{
+	border:0px;
+	margin:0px;
+	color:#4F8A10;
+	padding:0px 0px 0px 26px;
+	font:14px/22px "宋体";
+}
+/* 设备树显示，横向滚动条样式控制*/
+.treeView-scorll tr td {
+	overflow:visible;
+}
+.treeView-scorll tr td div{
+	overflow:visible;
+}
+.error, .validation {
+	clear: both;
+	border: 1px solid #BA3C34;
+	margin: 10px 10px;
+	padding:10px 10px 10px 30px;
+	background-image:url('../images/exclamation.gif');
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	border-radius: 2px 2px 2px 2px;
+}
+.message, .info, .success, .warning
+{
+	clear: both;
+	border: 1px solid green;
+	margin: 10px 10px;
+	padding:10px 10px 10px 30px;
+	background-image:url('../images/info.gif');
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	border-radius: 2px 2px 2px 2px;
+}
+
+.success {
+  color: #4F8A10;
+  background-color: #DFF2BF;
+  background-image:url('test_images/success.png');
+}

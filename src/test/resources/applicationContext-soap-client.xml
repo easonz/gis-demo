@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:cxf="http://cxf.apache.org/core" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	                    http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+	                    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+	default-lazy-init="true">
+	<description>Apache CXF Web Service Client端配置</description>
+
+	<context:property-placeholder ignore-resource-not-found="true"
+			location="classpath*:/application.properties,
+					  classpath*:/application.test.properties,
+          			  classpath*:/application.functional.properties" />	
+
+    <jaxws:client id="PQDifService"
+    	serviceClass="com.zhiyuan.webservices.soap.test.pqdif.PQDifService"
+    	address="${baseUrl}/PqDifService">
+    	<jaxws:outInterceptors>  
+	        <ref bean="httpHeaderOutInterceptor"/>
+        </jaxws:outInterceptors>  
+    </jaxws:client>
+    <jaxws:client id="RealtimeService"
+    	serviceClass="com.zhiyuan.webservices.soap.test.realtime.RealtimeService"
+    	address="${baseUrl}/RealtimeService">
+    	<jaxws:outInterceptors>  
+	        <ref bean="httpHeaderOutInterceptor"/>
+        </jaxws:outInterceptors>  
+    </jaxws:client>
+    <jaxws:client id="DeviceManageService"
+    	serviceClass="com.zhiyuan.webservices.soap.test.devicemanage.DeviceManageService"
+    	address="${baseUrl}/DeviceManageService">
+    	<jaxws:outInterceptors>  
+	        <ref bean="httpHeaderOutInterceptor"/>
+        </jaxws:outInterceptors>  
+    </jaxws:client>
+    <jaxws:client id="UserManageService"
+    	serviceClass="com.zhiyuan.webservices.soap.test.usermanage.UserManageService"
+    	address="${baseUrl}/UserManageService">
+    	<jaxws:outInterceptors>  
+	        <ref bean="httpHeaderOutInterceptor"/>
+        </jaxws:outInterceptors>  
+    </jaxws:client>
+    <jaxws:client id="TransientService"
+    	serviceClass="com.zhiyuan.webservices.soap.test.transientservice.TransientService"
+    	address="${baseUrl}/TransientService">
+    	<jaxws:outInterceptors>  
+	        <ref bean="httpHeaderOutInterceptor"/>
+        </jaxws:outInterceptors>  
+    </jaxws:client>
+    <jaxws:client id="SteadyService"
+    	serviceClass="com.zhiyuan.webservices.soap.test.steadyservice.SteadyService"
+    	address="${baseUrl}/SteadyService">
+    	<jaxws:outInterceptors>  
+	        <ref bean="httpHeaderOutInterceptor"/>
+        </jaxws:outInterceptors>  
+    </jaxws:client>
+    
+    <bean id="httpHeaderOutInterceptor" class="com.zhiyuan.webservices.soap.test.HTTPHeaderOutInterceptor">
+    </bean>  
+</beans>

@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+/*
+#chart {
+    float: left;
+    margin: 100px auto auto 100px;
+    width: 400px;
+    height: 300px;
+    background-color: #eee;
+    border: 1px solid red;
+}
+
+ 
+#curDate {
+	width: 300px;
+	height: 30px;
+	border: 1px solid black;
+}
+  */  
+.center {
+	text-align: center;
+}
+
+.btnCls {
+	width: 100px;
+	height: 30px;
+}

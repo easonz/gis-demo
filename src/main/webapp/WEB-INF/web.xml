@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+
+	<display-name>PQ webservices</display-name>
+
+	<!-- Spring ApplicationContext配置文件的路径,可使用通配符，用于后面的Spring Context Loader -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath*:/applicationContext.xml
+			classpath*:/applicationContext-webgis.xml
+		</param-value>
+	</context-param>
+
+	<!-- 设定Spring Context的默认Profile -->
+	<context-param>
+		<param-name>spring.profiles.default</param-name>
+		<param-value>production</param-value>
+	</context-param>
+
+	<!--Spring ApplicationContext 载入 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<filter>     
+        <filter-name>ExceptionFilter</filter-name>     
+        <filter-class>com.zhiyuan.filter.ExceptionFilter</filter-class>     
+    </filter>     
+    <filter-mapping>     
+        <filter-name>ExceptionFilter</filter-name>    
+        <!-- 只过滤 .jsp 结尾的url, 其余的如 .do, .html, .jpg, .css 等不作过滤-->     
+        <url-pattern>/*</url-pattern>
+    </filter-mapping> 
+
+
+	<servlet>
+		<servlet-name>CgiServlet</servlet-name>
+		<servlet-class>com.zhiyuan.servlet.CgiServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CgiServlet</servlet-name>
+		<url-pattern>/cgi-bin/proxy.cgi</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>AlarmServlet</servlet-name>
+		<servlet-class>com.zhiyuan.servlet.AlarmServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>AlarmServlet</servlet-name>
+		<url-pattern>/CheckAlarmServlet.do</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ProxyServlet</servlet-name>
+		<servlet-class>com.zhiyuan.servlet.ProxyServlet</servlet-class>
+		<init-param>
+			<param-name>proxyHost</param-name>
+			<param-value>192.168.27.218</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPort</param-name>
+			<param-value>8080</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPath</param-name>
+			<param-value>/PQWebServer</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ProxyServlet</servlet-name>
+		<url-pattern>/PQWebServer/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>GeoserverProxyServlet</servlet-name>
+		<servlet-class>com.zhiyuan.servlet.ProxyServlet</servlet-class>
+		<init-param>
+			<param-name>proxyHost</param-name>
+			<param-value>192.168.27.218</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPort</param-name>
+			<param-value>9000</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPath</param-name>
+			<param-value>/geoserver</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GeoserverProxyServlet</servlet-name>
+		<url-pattern>/geoserver/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>OpenlayerProxyServlet</servlet-name>
+		<servlet-class>com.zhiyuan.servlet.ProxyServlet</servlet-class>
+		<init-param>
+			<param-name>proxyHost</param-name>
+			<param-value>192.168.27.145</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPort</param-name>
+			<param-value>80</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPath</param-name>
+			<param-value>/openlayers</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>OpenlayerProxyServlet</servlet-name>
+		<url-pattern>/openlayers/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>GeoextProxyServlet</servlet-name>
+		<servlet-class>com.zhiyuan.servlet.ProxyServlet</servlet-class>
+		<init-param>
+			<param-name>proxyHost</param-name>
+			<param-value>192.168.27.145</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPort</param-name>
+			<param-value>80</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPath</param-name>
+			<param-value>/geoext</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GeoextProxyServlet</servlet-name>
+		<url-pattern>/geoext/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>ExtProxyServlet</servlet-name>
+		<servlet-class>com.zhiyuan.servlet.ProxyServlet</servlet-class>
+		<init-param>
+			<param-name>proxyHost</param-name>
+			<param-value>192.168.27.145</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPort</param-name>
+			<param-value>80</param-value>
+		</init-param>
+		<init-param>
+			<param-name>proxyPath</param-name>
+			<param-value>/ext</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ExtProxyServlet</servlet-name>
+		<url-pattern>/ext/*</url-pattern>
+	</servlet-mapping>
+
+</web-app>

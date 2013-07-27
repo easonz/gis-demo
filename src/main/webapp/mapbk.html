@@ -1,0 +1,493 @@
+<html>
+<head>
+<title>GeoExt Workshop Application</title>
+
+<!-- 
+
+<link rel="stylesheet" type="text/css" href="http://extjs.cachefly.net/ext-3.4.0/resources/css/ext-all.css" />
+
+<script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="ext/ext-all.js"></script>
+ -->
+	
+<link rel="stylesheet" type="text/css" href="http://localhost/ext/resources/css/ext-all.css">
+<link rel="stylesheet" type="text/css" href="http://localhost/geoext/resources/css/popup.css" />
+<link rel="stylesheet" type="text/css" href="resources/css/DataType.css">
+
+<script type="text/javascript" src="http://localhost/ext/adapter/ext/ext-base.js"></script>
+<script type="text/javascript" src="http://localhost/ext/ext-all.js"></script>
+<script type="text/javascript" src="http://localhost/openlayers/lib/OpenLayers.js"></script>
+<script type="text/javascript" src="http://localhost/geoext/lib/GeoExt.js"></script>
+<script type="text/javascript" src='http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjpkAC9ePGem0lIq5XcMiuhR_wWLPFku8Ix9i2SXYRVK3e45q1BQUd_beF8dtzKET_EteAjPdGDwqpQ'></script>
+
+
+<script type="text/javascript">
+	Ext.BLANK_IMAGE_URL = "ext/resources/images/default/s.gif";
+	OpenLayers.ProxyHost = "/cgi-bin/proxy.cgi?url=";
+    
+    var DeleteFeature = OpenLayers.Class(OpenLayers.Control, {
+        initialize: function(layer, options) {
+            OpenLayers.Control.prototype.initialize.apply(this, [options]);
+            this.layer = layer;
+            this.handler = new OpenLayers.Handler.Feature(
+                this, layer, {click: this.clickFeature}
+            );
+        },
+        clickFeature: function(feature) {
+            // if feature doesn't have a fid, destroy it
+            if(feature.fid == undefined) {
+                this.layer.destroyFeatures([feature]);
+            } else {
+                feature.state = OpenLayers.State.DELETE;
+                this.layer.events.triggerEvent("afterfeaturemodified", 
+                                               {feature: feature});
+                feature.renderIntent = "select";
+                this.layer.drawFeature(feature);
+            }
+        },
+        setMap: function(map) {
+            this.handler.setMap(map);
+            OpenLayers.Control.prototype.setMap.apply(this, arguments);
+        },
+        CLASS_NAME: "OpenLayers.Control.DeleteFeature"
+    });    
+ 
+    var saveStrategy = new OpenLayers.Strategy.Save();
+    var vectorLayer = new OpenLayers.Layer.Vector("设备图层", {
+        styleMap: new OpenLayers.StyleMap({
+            "default": new OpenLayers.Style(OpenLayers.Util.applyDefaults({
+	            //strokeColor: "#00FF00",
+	            //strokeOpacity: 1,
+	            //strokeWidth: 3,
+	            //fillColor: "#FF5500",
+	            //fillOpacity: 0.5,
+	            //pointRadius: 6,
+	            //pointerEvents: "visiblePainted",
+	            // label with \n linebreaks
+	            label : "name: ${name}",
+	            //fontColor: "${favColor}",
+	            //fontSize: "12px",
+	            //fontFamily: "Courier New, monospace",
+	            //fontWeight: "bold",
+	            labelAlign: "left",
+	            labelXOffset: "-25",
+	            labelYOffset: "17",
+	            labelOutlineColor: "white",
+	            labelOutlineWidth: 3,
+                externalGraphic: "img/marker-green.png",
+                graphicOpacity: 1,
+                rotation: 0,
+                pointRadius: 10
+            }, OpenLayers.Feature.Vector.style["default"])),
+            "select": new OpenLayers.Style({
+                externalGraphic: "img/marker-blue.png"
+            }),
+            "temporary": new OpenLayers.Style({
+                externalGraphic: "img/marker-gold.png"
+            })
+        }),
+		strategies: [new OpenLayers.Strategy.BBOX(), saveStrategy],
+		protocol : new OpenLayers.Protocol.WFS({
+					version : "1.1.0",
+					// loading data through localhost url path
+					url : "http://localhost:8080/PQWebGIS/geoserver/wfs",
+					featureNS : "http://www.zhiyuan.com/test_postgis",
+					// layer name
+					featureType : "pq_device",
+					featurePrefix: "test_postgis",
+					// geometry column name
+					geometryName : "geom",
+					schema : "http://localhost:8080/PQWebGIS/geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=test_postgis:pq_device"
+				})				
+    });    
+
+	var app, items = [], controls = [], selectedFeature;
+	var selectControl, highlightCtrl, hoverControl;
+	var ctrl, toolbarItems = [], action, actions = {};
+	
+	var localWms = new OpenLayers.Layer.WMS("本地图层",
+			"http://localhost:8080/PQWebGIS/geoserver/wms", {
+		layers : "tiger:giant_polygon"
+	}, {
+		isBaseLayer : true
+	})
+
+	var gphy = new OpenLayers.Layer.Google("Google Physical", {
+		type : G_PHYSICAL_MAP
+	});
+	var gmap = new OpenLayers.Layer.Google("Google Streets", // the default
+	{
+		numZoomLevels : 20
+	});
+	var ghyb = new OpenLayers.Layer.Google("Google Hybrid", {
+		type : G_HYBRID_MAP,
+		numZoomLevels : 20
+	});
+	var gsat = new OpenLayers.Layer.Google("Google Satellite", {
+		type : G_SATELLITE_MAP,
+		numZoomLevels : 22
+	});
+
+	var ol_wms = new OpenLayers.Layer.WMS("OpenLayers WMS",
+			"http://vmap0.tiles.osgeo.org/wms/vmap0", {
+				layers : 'basic'
+			});
+
+	var gwc = new OpenLayers.Layer.WMS("Global Imagery",
+			"http://maps.opengeo.org/geowebcache/service/wms", {
+				layers : "bluemarble"
+			}, {
+				tileOrigin : new OpenLayers.LonLat(-180, -90)
+			});
+
+	var mapPanel = {
+		xtype : "gx_mappanel",
+		ref : "mapPanel",
+		title : "子站地图",
+		region : "center",
+		tbar : [],
+		map : {
+			numZoomLevels : 19,
+			controls : controls,
+			allOverlays : false
+		},
+		extent : OpenLayers.Bounds.fromArray([ 112.245, 22.303, 114.155, 23.178 ]),
+		layers : [ 
+		           gsat,
+		           gphy, 
+		           gmap,
+		           ghyb,
+		           localWms,	
+		           vectorLayer ]
+	};
+
+	controls.push(new OpenLayers.Control.Navigation(),
+			new OpenLayers.Control.Attribution(),
+			new OpenLayers.Control.PanPanel(),
+			new OpenLayers.Control.PanZoomBar(),
+			new OpenLayers.Control.MousePosition(),
+			new OpenLayers.Control.LayerSwitcher());
+
+	var treePanel = {
+		//xtype : "treepanel",
+		xtype : "treepanel",
+		title : "子站结构",
+		ref : "treeSite",
+		region : "west",
+		split : true,
+		width : 300,
+		minSize : 200,
+		maxSize : 400,
+		autoScroll : true,
+		enableDD : true,
+		root : {
+			nodeType : 'async'
+		},
+		// auto create TreeLoader
+		dataUrl : 'site-info.json',
+		bbar : [ {} ]
+	};
+
+	var commonPropertyGridPanel1 = {
+		xtype : "propertygrid",
+		title : "设备信息",
+		ref : "commonPropertyGrid",
+		region : "east",
+		width : 200,
+		autoScroll : true,
+		padding : 0,
+		bbar : [ {} ]
+	};
+
+	var commonPropertyGridPanel = {
+		region : 'east',
+		id : 'west-panel', // see Ext.getCmp() below
+		ref : "commonPropertyGrid",
+		title : '设备信息',
+		split : true,
+		width : 200,
+		minSize : 175,
+		maxSize : 400,
+		collapsible : true,
+		animCollapse : true,
+		//margins: '0 0 0 0',
+		layout : {
+			type : 'accordion',
+			animate : true
+		},
+		items : [
+				{
+					//contentEl: 'east',
+					xtype : "propertygrid",
+					title : '基础信息',
+					iconCls : 'nav',
+					source : {
+						"设备Id" : "1234",
+						"设备名称" : "1234",
+						"设备地理位置" : "1234",
+						"设备IP地址" : "1234",
+						"母线" : "1234",
+						"设备所属区域" : "1234"
+					}
+				},
+				{
+					title : '其他设备信息',
+					html : '<a href="#">历史数据</a></br><a href="#">实时数据</a></br><a href="#">告警数据</a></br>',
+					//border: false,
+					iconCls : 'settings'
+				} ],
+		bbar : [ {} ]
+	};
+	//---------------------------------------------------------------------
+	var alermEventGridPanel = {
+		xtype : "grid",
+		ref : "alermEventGrid",
+		title : "设备告警事件",
+		region : "south",
+		split : true,
+		collapsible : true,
+		height : 250,
+		minSize : 150,
+		maxSize : 400,
+		sm : new GeoExt.grid.FeatureSelectionModel(),
+		store : new GeoExt.data.FeatureStore(
+				{
+					fields : [ {
+						name : "fid",
+						type : "string"
+					}, {
+						name : "date",
+						type : "string"
+					}, {
+						name : "info",
+						type : "string"
+					} ],
+					proxy : new GeoExt.data.ProtocolProxy(
+							{
+								protocol : new OpenLayers.Protocol.WFS(
+										{
+											version : "1.1.0",
+											// loading data through localhost url path
+											url : "http://localhost:8080/PQWebGIS/geoserver/wfs",
+											featureNS : "http://www.census.gov",
+											// layer name
+											featureType : "poi",
+											featurePrefix : "tiger",
+											// geometry column name
+											geometryName : "the_geom",
+											schema : "http://localhost:8080/PQWebGIS/geoserver/wfs/DescribeFeatureType?version=1.1.0&typename=tiger:tiger_roads"
+										})
+							}),
+					autoLoad : true
+				}),
+		columns : [ {
+			header : "设备ID",
+			dataIndex : "fid"
+		}, {
+			header : "产生时间",
+			dataIndex : "date"
+		}, {
+			header : "告警信息",
+			dataIndex : "info"
+		} ],
+		bbar : [ {
+			text : "筛选",
+			handler : function() {
+			}
+		}, {
+			text : "清空",
+			handler : function() {
+			}
+		} ]
+	};
+
+	var centerPanel = {
+		region : "center",
+		ref : "centerPanel",
+		layout : 'border',
+		//border: false,
+		items : [ mapPanel, alermEventGridPanel ]
+	}
+
+	items.push(centerPanel);
+	items.push(treePanel);
+	items.push(commonPropertyGridPanel);
+	//items.push(alermEventGridPanel);	
+
+	Ext.onReady(function() {
+		app = new Ext.Viewport({
+			layout : "border",
+			items : items
+		});
+
+		app.treeSite.getRootNode().expand(true);
+		map = app.centerPanel.mapPanel.map;
+
+		var tbar = app.centerPanel.mapPanel.getTopToolbar();
+		var drawControl = new OpenLayers.Control.DrawFeature(vectorLayer,
+				OpenLayers.Handler.Point);
+		var dragControl = new OpenLayers.Control.DragFeature(vectorLayer, {
+			onStart : function(feature, pixel) {
+				console.log(feature.geometry.toString());
+				//feature.oldGeometry = geometry;
+			},
+			onComplete : function(feature, pixel) {
+				console.log(feature.geometry.toString());
+				feature.state = OpenLayers.State.UPDATE;
+			}
+		});
+		var deleteControl = new DeleteFeature(vectorLayer, {
+			title : "Delete Feature"
+		});
+
+		toolbarItems.push(new GeoExt.Action({
+			text : "导航",
+			control : new OpenLayers.Control.Navigation(),
+			tooltip : "navigate",
+			map : map,
+			// button options
+			toggleGroup : "draw",
+			//allowDepress: false,
+			pressed : true,
+			// check item options
+			group : "draw",
+			checked : true
+		}));
+		toolbarItems.push("-");
+		toolbarItems.push(new GeoExt.Action({
+			text : "新建",
+			control : drawControl,
+			enableToggle : true,
+			tooltip : "创建新的设备节点",
+			group : "draw",
+			map : map,
+			toggleGroup : "draw"
+		}));
+		toolbarItems.push(new GeoExt.Action({
+			text : "编辑",
+			control : dragControl,
+			enableToggle : true,
+			tooltip : "修改设备节点",
+			group : "draw",
+			map : map,
+			toggleGroup : "draw"
+		}));
+		toolbarItems.push(new GeoExt.Action({
+			text : "删除",
+			control : deleteControl,
+			enableToggle : true,
+			tooltip : "删除设备节点",
+			group : "draw",
+			map : map,
+			toggleGroup : "draw"
+		}));
+		toolbarItems.push("-");
+		toolbarItems.push(new GeoExt.Action({
+			text : "保存",
+			handler : function() {
+
+				for ( var i = 0; i < vectorLayer.features.length; i++) {
+					var feature = vectorLayer.features[i];
+					console.log("id : " + feature.id + "  status : "
+							+ feature.state);
+				}
+
+				var response = vectorLayer.protocol.commit(
+						vectorLayer.features, {
+							callback : function() {
+								vectorLayer.redraw(true);
+								//vectorLayer.reload();
+							}
+						});
+
+				console.log(response);
+			}
+		}));
+		tbar.add(toolbarItems);
+
+		hoverControl = new OpenLayers.Control.SelectFeature([ vectorLayer ], {
+			hover : true,
+			highlightOnly : true,
+			renderIntent : "temporary",
+			overFeature : function(feature) {
+				console.log('hover: feature id : ' + feature.id);
+			},
+			outFeature : function(feature) {
+				console.log('hover out: feature id : ' + feature.id);
+			}
+		});
+
+		highlightCtrl = new OpenLayers.Control.SelectFeature([ vectorLayer ], {
+			hover : true,
+			highlightOnly : true,
+			renderIntent : "temporary",
+			eventListeners : {
+				beforefeaturehighlighted : function() {
+				},
+				featurehighlighted : function() {
+				},
+				featureunhighlighted : function() {
+				}
+			}
+		});
+
+		selectControl = new OpenLayers.Control.SelectFeature([ vectorLayer ], {
+			clickout : true,
+			toggle : false,
+			multiple : false,
+			hover : false,
+			//renderIntent: "temporary",
+			toggleKey : "ctrlKey", // ctrl key removes from selection
+			multipleKey : "shiftKey" // shift key adds to selection
+		});
+
+		//map.addControl(hoverControl);
+		//hoverControl.activate();
+
+		map.addControl(highlightCtrl);
+		highlightCtrl.activate();
+
+		map.addControl(selectControl);
+		selectControl.activate();
+
+		vectorLayer.events.on({
+			"featureselected" : function(e) {
+				feature = e.feature;
+				selectedFeature = e.feature;
+				var popup = new OpenLayers.Popup.FramedCloud("chicken",
+						feature.geometry.getBounds().getCenterLonLat(), null,
+						"<div style='font-size:.8em'>Feature: " + feature.id
+								+ "<br>Area: " + feature.geometry.getArea()
+								+ "</div>", null, true, onPopupClose);
+				feature.popup = popup;
+				map.addPopup(popup);
+			},
+			"featureunselected" : function(e) {
+				map.removePopup(e.feature.popup);
+				e.feature.popup.destroy();
+				e.feature.popup = null;
+			}
+		});
+
+		/*
+		var bbar = app.alermEventGrid.getBottomToolbar();
+		bbar.add([]);
+		bbar.doLayout();*/
+	});
+
+	function onPopupClose(evt) {
+		selectControl.unselect(selectedFeature);
+		var features = vectorLayer.features;
+		var features = vectorLayer.getFeaturesByAttribute("NAME", "museam");
+		for ( var i = 0; i < features.length; i++) {
+			var feature = features[i];
+			if (i < 2) {
+				highlightCtrl.highlight(feature);
+			}
+		}
+	}
+</script>
+</head>
+<body>
+</body>
+</html>
