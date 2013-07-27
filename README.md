@@ -1,4 +1,4 @@
 gis-demo
 ========
 
-a gis project with geoext, openlayer, geoserver, postgis
+a web gis project with geoext, openlayer, geoserver, postgis
